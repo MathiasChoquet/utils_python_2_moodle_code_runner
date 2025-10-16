@@ -159,9 +159,9 @@ class MoodleXMLGenerator:
         ET.SubElement(q, 'useace').text = ''
         ET.SubElement(q, 'resultcolumns').text = ''
 
-        # Template
+        # Template (CDATA directement, sans balise <text>)
         template_elem = ET.SubElement(q, 'template')
-        template_elem.append(self._create_cdata_element('text', question.template))
+        template_elem.text = question.template
 
         # Paramètres template
         ET.SubElement(q, 'iscombinatortemplate').text = ''
@@ -302,7 +302,7 @@ class MoodleXMLGenerator:
         """
         import re
 
-        def wrap_if_needed(match):
+        def wrap_text_if_needed(match):
             content = match.group(1)
             # Si le contenu contient du code Python, du HTML (échappé ou non), ou des templates Twig
             needs_cdata = any(marker in content for marker in [
@@ -318,8 +318,17 @@ class MoodleXMLGenerator:
                 return f'<text><![CDATA[{content}]]></text>'
             return match.group(0)
 
+        def wrap_template(match):
+            content = match.group(1)
+            # Restaurer les caractères échappés
+            content = content.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')
+            return f'<template><![CDATA[{content}]]></template>'
+
+        # Remplacer <template>...</template> SANS balise text interne
+        xml_str = re.sub(r'<template>([^<].*?)</template>', wrap_template, xml_str, flags=re.DOTALL)
+
         # Remplacer les <text>...</text> qui contiennent du code
-        xml_str = re.sub(r'<text>(.+?)</text>', wrap_if_needed, xml_str, flags=re.DOTALL)
+        xml_str = re.sub(r'<text>(.+?)</text>', wrap_text_if_needed, xml_str, flags=re.DOTALL)
 
         return xml_str
 
