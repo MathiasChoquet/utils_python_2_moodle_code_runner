@@ -1,0 +1,2 @@
+# Dépendances pour Python to Moodle XML Generator
+PyYAML>=6.0

@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Base de données MySQL pour Moodle
+  mysql:
+    image: mysql:8.0
+    container_name: moodle_db
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: moodle_root_pass
+      MYSQL_DATABASE: moodle
+      MYSQL_USER: moodleuser
+      MYSQL_PASSWORD: moodlepass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - moodle_network
+    restart: unless-stopped
+
+  # Moodle avec CodeRunner
+  moodle:
+    build: .
+    container_name: moodle_app
+    ports:
+      - "8080:80"
+    environment:
+      # Configuration de la base de données
+      MOODLE_DATABASE_TYPE: mysqli
+      MOODLE_DATABASE_HOST: mysql
+      MOODLE_DATABASE_NAME: moodle
+      MOODLE_DATABASE_USER: moodleuser
+      MOODLE_DATABASE_PASSWORD: moodlepass
+      MOODLE_DATABASE_PORT_NUMBER: 3306
+    volumes:
+      - moodle_data:/var/www/html
+      - moodledata:/var/www/moodledata
+    depends_on:
+      - mysql
+      - jobe
+    networks:
+      - moodle_network
+    restart: unless-stopped
+
+  # Jobe server pour exécuter le code
+  jobe:
+    image: trampgeek/jobeinabox:latest
+    container_name: moodle_jobe
+    ports:
+      - "4000:80"
+    environment:
+      # Configuration Jobe
+      JOBE_SERVER_NAME: jobe
+    volumes:
+      - jobe_data:/var/www/html/jobe/files
+    networks:
+      - moodle_network
+    restart: unless-stopped
+    # Augmenter les limites pour les exécutions
+    ulimits:
+      nproc: 1000
+      nofile:
+        soft: 1024
+        hard: 2048
+
+volumes:
+  mysql_data:
+    driver: local
+  moodle_data:
+    driver: local
+  moodledata:
+    driver: local
+  jobe_data:
+    driver: local
+
+networks:
+  moodle_network:
+    driver: bridge

@@ -1,0 +1,94 @@
+# Configuration pour la génération de questions Moodle CodeRunner
+
+# Catégorie de la banque de questions
+category:
+  # Chemin de la catégorie dans Moodle (format: $course$/top/Category1/Category2)
+  path: "$course$/top/Défaut pour 25-Mi21-In1/Test Banque Questions/Partiel"
+  # Description de la catégorie
+  info: "Questions générées automatiquement depuis Python"
+  # Format de l'info (html, moodle_auto_format)
+  info_format: "html"
+
+# Paramètres CodeRunner pour toutes les questions
+coderunner:
+  # Type de question CodeRunner
+  type: "python3"
+  # Mode prototype (0 = utilise prototype par défaut)
+  prototypetype: 0
+  # Tout ou rien (1 = oui, 0 = non)
+  allornothing: 1
+  # Régime de pénalité (0 = pas de pénalité)
+  penaltyregime: "0"
+  # Pré-vérification (0 = non)
+  precheck: 0
+  # Cacher le bouton de vérification (0 = non)
+  hidecheck: 0
+  # Montrer le code source (0 = non)
+  showsource: 0
+  # Nombre de lignes dans la zone de réponse
+  answerboxlines: 18
+  # Nombre de colonnes dans la zone de réponse
+  answerboxcolumns: 100
+  # Note par défaut
+  defaultgrade: 1.0000000
+  # Pénalité par défaut
+  penalty: 0.0000000
+  # Valider à la sauvegarde (1 = oui)
+  validateonsave: 1
+  # Afficher le feedback (1 = oui)
+  displayfeedback: 1
+  # Autoriser l'abandon (0 = non)
+  giveupallowed: 0
+  # Paramètres du template
+  hoisttemplateparams: 1
+  extractcodefromjson: 1
+  templateparamslang: "twig"
+  templateparamsevalpertry: 0
+  templateparamsevald: "{}"
+  twigall: 0
+
+# Paramètres des test cases
+testcase:
+  # Type de test (0 = normal)
+  testtype: 0
+  # Cacher les tests suivants si échec (0 = non)
+  hiderestiffail: 0
+  # Note par défaut pour chaque test
+  mark: 1.0000000
+  # Mode d'affichage (SHOW, HIDE, etc.)
+  display: "SHOW"
+
+# Template générique pour le code de test
+# {{ STUDENT_ANSWER }} sera remplacé par la réponse de l'étudiant
+# {% for TEST in TESTCASES %} boucle sur les tests
+# IMPORTANT: Si use_custom_template = false, le template par défaut du prototype sera utilisé
+template:
+  # Utiliser un template personnalisé (true) ou le template par défaut (false)
+  use_custom_template: false
+  # Séparateur entre les tests
+  separator: "#<ab@17943918#@>#"
+  # Template Twig de base (seulement si use_custom_template = true)
+  twig_template: |
+    {{ STUDENT_ANSWER }}
+
+    SEPARATOR = "#<ab@17943918#@>#"
+
+    {% for TEST in TESTCASES %}
+    {{ TEST.testcode }}
+    {% if not loop.last %}
+    print(SEPARATOR)
+    {% endif %}
+    {% endfor %}
+
+# Tags à ajouter aux questions
+tags:
+  - "auto-generated"
+
+# Configuration du logging
+logging:
+  # Niveau de log (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  level: "INFO"
+  # Format du log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # Fichier de log (optionnel, sinon console uniquement)
+  file: null
