@@ -57,6 +57,24 @@ EOF
         --shortname="MoodleDev"
 
     echo "Moodle installation complete!"
+
+    # Installer les plugins (notamment CodeRunner)
+    echo "Installing Moodle plugins (CodeRunner)..."
+    cd /var/www/html
+    php admin/cli/upgrade.php --non-interactive
+    echo "Plugins installation complete!"
+
+    # Configurer Jobe APRÈS l'installation des plugins
+    echo "Configuring Jobe server for CodeRunner..."
+    mysql -h"${MOODLE_DATABASE_HOST}" -u"${MOODLE_DATABASE_USER}" -p"${MOODLE_DATABASE_PASSWORD}" \
+        "${MOODLE_DATABASE_NAME}" --skip-ssl <<EOSQL
+        UPDATE mdl_config_plugins SET value='http://jobe:80'
+        WHERE plugin='qtype_coderunner' AND name='jobe_host';
+
+        UPDATE mdl_config_plugins SET value='1'
+        WHERE plugin='qtype_coderunner' AND name='jobesandbox_enabled';
+EOSQL
+    echo "Jobe server configured!"
 fi
 
 # ============================================
@@ -96,8 +114,8 @@ if mysql -h"${MOODLE_DATABASE_HOST}" -u"${MOODLE_DATABASE_USER}" -p"${MOODLE_DAT
     mysql -h"${MOODLE_DATABASE_HOST}" -u"${MOODLE_DATABASE_USER}" -p"${MOODLE_DATABASE_PASSWORD}" \
         "${MOODLE_DATABASE_NAME}" --skip-ssl <<EOSQL
         INSERT INTO mdl_config_plugins (plugin, name, value)
-        VALUES ('qtype_coderunner', 'jobe_host', 'jobe:80')
-        ON DUPLICATE KEY UPDATE value='jobe:80';
+        VALUES ('qtype_coderunner', 'jobe_host', 'http://jobe:80')
+        ON DUPLICATE KEY UPDATE value='http://jobe:80';
 
         INSERT INTO mdl_config_plugins (plugin, name, value)
         VALUES ('qtype_coderunner', 'jobesandbox_enabled', '1')
@@ -107,6 +125,7 @@ if mysql -h"${MOODLE_DATABASE_HOST}" -u"${MOODLE_DATABASE_USER}" -p"${MOODLE_DAT
         VALUES ('qtype_coderunner', 'jobe_apikey', '')
         ON DUPLICATE KEY UPDATE value='';
 EOSQL
+    echo "Jobe server configured for CodeRunner!"
 fi
 
 echo "Jobe configuration complete!"

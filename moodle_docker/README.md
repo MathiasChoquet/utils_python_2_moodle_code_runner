@@ -4,10 +4,10 @@ Environnement Docker pour développer et tester des questions CodeRunner pour Mo
 
 ## Architecture
 
-- **Moodle 4.3** : Plateforme d'apprentissage
-- **CodeRunner** : Plugin de questions de programmation pour Moodle
+- **Moodle 4.1** : Plateforme d'apprentissage
+- **CodeRunner** : Plugin de questions de programmation pour Moodle (installé automatiquement)
 - **Jobe** : Serveur d'exécution de code (sandbox)
-- **MariaDB** : Base de données
+- **MySQL 8.0** : Base de données
 
 ## Démarrage rapide
 
@@ -19,33 +19,30 @@ docker-compose up -d
 
 Le premier démarrage prend quelques minutes (téléchargement des images et initialisation).
 
+> **Important** : Si vous avez déjà utilisé cet environnement auparavant, il est recommandé de supprimer les volumes existants pour repartir sur une installation propre :
+> ```bash
+> docker-compose down -v
+> docker-compose up -d
+> ```
+
 ### 2. Accéder à Moodle
 
 - **URL** : http://localhost:8080
 - **Utilisateur** : admin
 - **Mot de passe** : Admin123!
 
-### 3. Installation de CodeRunner
+> **Note** : Le premier démarrage prend quelques minutes car le système installe automatiquement Moodle, CodeRunner, et configure Jobe. Attendez que les logs indiquent "Starting Apache..." avant de vous connecter.
 
-Après le premier démarrage :
+### 3. Vérifier l'installation de CodeRunner (automatique)
 
-1. Connectez-vous à Moodle avec les identifiants ci-dessus
-2. Moodle détectera automatiquement les nouveaux plugins
-3. Allez dans **Administration du site > Notifications**
-4. Cliquez sur **Mettre à jour la base de données Moodle** pour installer CodeRunner
-5. Suivez les instructions d'installation
+**CodeRunner et Jobe sont installés et configurés automatiquement !** Vous pouvez vérifier :
 
-### 4. Configuration de Jobe
+1. Connectez-vous à Moodle
+2. Allez dans **Administration du site > Plugins > Types de questions > CodeRunner**
+3. Vérifiez que le serveur Jobe est configuré sur `http://jobe:80`
+4. Cliquez sur **Test connexion** pour vérifier que tout fonctionne
 
-Une fois CodeRunner installé :
-
-1. Allez dans **Administration du site > Plugins > Types de questions > CodeRunner**
-2. Dans la section "Jobe sandbox settings" :
-   - **Jobe server** : `http://jobe:80`
-   - Cliquez sur **Test connexion** pour vérifier
-3. Sauvegardez les paramètres
-
-### 5. Créer un cours
+### 4. Créer un cours
 
 1. Cliquez sur **Administration du site > Cours > Gérer les cours et catégories**
 2. Créez une nouvelle catégorie (ex: "Python")
@@ -114,6 +111,39 @@ Les données sont conservées dans des volumes Docker :
 7. **Valider** que tout fonctionne correctement
 8. **Déployer** sur votre Moodle de production
 
+## Installation automatique de CodeRunner
+
+L'environnement est configuré pour installer et configurer automatiquement CodeRunner :
+
+### Lors du build Docker
+1. Le plugin CodeRunner v5.2.1 (compatible Moodle 4.1) est téléchargé depuis GitHub
+2. Il est installé dans `/var/www/html/question/type/coderunner`
+3. Le behaviour `adaptive_adapted_for_coderunner` est également installé automatiquement
+
+### Au premier démarrage
+1. Moodle est installé avec la base de données
+2. Le script d'installation détecte le plugin CodeRunner et l'installe automatiquement
+3. La configuration de Jobe est automatiquement mise à jour dans la base de données :
+   - `jobe_host` = `http://jobe:80`
+   - `jobesandbox_enabled` = `1`
+4. Les restrictions de sécurité cURL sont désactivées pour autoriser la connexion à Jobe
+
+Le bouton "Check" devrait fonctionner immédiatement après l'installation !
+
+### Vérification manuelle
+
+Pour vérifier que tout est bien configuré :
+
+```bash
+# Voir les logs d'installation
+docker logs moodle_app
+
+# Vous devriez voir :
+# - "Installing Moodle plugins (CodeRunner)..."
+# - "Plugins installation complete!"
+# - "Jobe server configured for CodeRunner!"
+```
+
 ## Dépannage
 
 ### Moodle ne démarre pas
@@ -136,6 +166,36 @@ docker-compose logs jobe
 Sur Linux/Mac, vous devrez peut-être ajuster les permissions :
 ```bash
 sudo chown -R 1001:1001 ./volumes
+```
+
+### CodeRunner n'est pas installé
+
+Si CodeRunner n'apparaît pas dans les plugins :
+
+1. Vérifiez les logs : `docker logs moodle_app`
+2. Réinstallez manuellement depuis le conteneur :
+```bash
+docker exec -it moodle_app bash
+cd /var/www/html
+php admin/cli/upgrade.php --non-interactive
+```
+
+### Jobe ne se connecte pas à CodeRunner
+
+1. Vérifiez que Jobe fonctionne :
+```bash
+curl http://localhost:4000/jobe/index.php/restapi/languages
+```
+
+2. Testez la connexion depuis le conteneur Moodle :
+```bash
+docker exec -it moodle_app curl http://jobe:80/jobe/index.php/restapi/languages
+```
+
+3. Si la connexion échoue, vérifiez les paramètres dans la base de données :
+```bash
+docker exec -it moodle_app bash
+mysql -hmysql -umoodleuser -pmoodlepass moodle -e "SELECT * FROM mdl_config_plugins WHERE plugin='qtype_coderunner';"
 ```
 
 ### Erreur lors de l'import XML

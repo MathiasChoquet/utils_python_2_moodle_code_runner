@@ -17,9 +17,8 @@ PYTHON_2_MOODLE_CODE_RUNNER/
 │   │   ├── assertion_transformer.py
 │   │   └── moodle_xml_generator.py
 │   ├── input/                 # Fichiers Python d'exemple
-│   │   ├── partiel_In211_2526_with_comment.py
-│   │   ├── partiel_In211_2526_unittest.py
-│   │   └── questions-25-Mi21-In1-Partiel -20251015-2313.xml
+│   │   ├── test_minimal.py
+│   │   └── test_minimal_unittest.py
 │   └── output/                # XML Moodle généré
 │
 └── moodle_docker/             # 🐳 Environnement Moodle + CodeRunner + Jobe
@@ -38,7 +37,7 @@ PYTHON_2_MOODLE_CODE_RUNNER/
 ```bash
 cd python_to_moodle
 pip install -r requirements.txt
-python python_to_moodle.py input/partiel_In211_2526_with_comment.py --unittest-file input/partiel_In211_2526_unittest.py
+python python_to_moodle.py input/test_minimal.py --unittest-file input/test_minimal_unittest.py
 ```
 
 ➡️ [Voir la documentation complète](python_to_moodle/UTILISATION.md)
@@ -148,9 +147,22 @@ Accédez à Moodle : http://localhost:8080
 ## 💡 Exemples
 
 Des fichiers d'exemple complets sont fournis dans `python_to_moodle/input/` :
-- Fichier de fonctions avec docstrings
-- Fichier de tests unittest
-- XML Moodle de référence
+
+### test_minimal.py
+Fichier d'exemple démontrant :
+- **Deux fonctions** : `double()` et `somme_doubles()`
+- **Dépendances** : `somme_doubles()` utilise `double()`
+- **Docstrings complètes** avec Args, Returns, Raises et Exemples
+- **Gestion d'exceptions** avec TypeError
+
+### test_minimal_unittest.py
+Fichier de tests démontrant tous les types d'assertions :
+- ✅ **assertEqual** : tests d'égalité (nombres positifs, négatifs, zéro, décimaux)
+- ✅ **assertIn** : tests d'appartenance (vérifier qu'un résultat est dans une liste)
+- ✅ **assertRaises** : tests d'exceptions (TypeError avec arguments invalides)
+- ✅ **Tests de messages d'erreur** : vérification du contenu des exceptions
+
+**Génération :** Crée 2 questions Moodle avec 13 tests au total
 
 ## 🤝 Contribution
 

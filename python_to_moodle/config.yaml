@@ -65,6 +65,10 @@ testcase:
 template:
   # Utiliser un template personnalisé (true) ou le template par défaut (false)
   use_custom_template: false
+  # Inclure les imports et les fonctions dépendantes dans le template
+  # Si true, les imports du module et les fonctions dont dépend la fonction testée
+  # seront automatiquement ajoutés au début du template
+  include_dependencies: true
   # Séparateur entre les tests
   separator: "#<ab@17943918#@>#"
   # Template Twig de base (seulement si use_custom_template = true)

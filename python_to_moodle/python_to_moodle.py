@@ -113,16 +113,20 @@ def build_template(dependencies: list, dependency_code: dict,
     """
     template_parts = []
 
-    # Ajouter les imports si nécessaires
-    if imports:
-        template_parts.extend(imports)
-        template_parts.append('')  # Ligne vide
+    # Vérifier si on doit inclure les dépendances
+    include_deps = config['template'].get('include_dependencies', True)
 
-    # Ajouter les dépendances
-    for dep_name in dependencies:
-        if dep_name in dependency_code:
-            template_parts.append(dependency_code[dep_name])
-            template_parts.append('')  # Ligne vide entre les fonctions
+    if include_deps:
+        # Ajouter les imports si nécessaires
+        if imports:
+            template_parts.extend(imports)
+            template_parts.append('')  # Ligne vide
+
+        # Ajouter les dépendances
+        for dep_name in dependencies:
+            if dep_name in dependency_code:
+                template_parts.append(dependency_code[dep_name])
+                template_parts.append('')  # Ligne vide entre les fonctions
 
     # Ajouter le template générique
     twig_template = config['template']['twig_template']
@@ -154,7 +158,7 @@ def detect_imports(module_info, function_name: str) -> list:
 
 
 def process_function(function_name: str, module_info, test_class,
-                     config: dict) -> MoodleQuestion:
+                     config: dict, full_source_code: str) -> MoodleQuestion:
     """
     Traite une fonction et génère une question Moodle.
 
@@ -163,6 +167,7 @@ def process_function(function_name: str, module_info, test_class,
         module_info: Informations du module
         test_class: Classe de test unittest
         config: Configuration
+        full_source_code: Code source complet du module
 
     Returns:
         MoodleQuestion
@@ -178,8 +183,8 @@ def process_function(function_name: str, module_info, test_class,
         # questiontext += f"<pre>{func_info.docstring}</pre>"
         pass
 
-    # Trouver les dépendances
-    analyzer = FunctionAnalyzer(module_info.functions[function_name].source_code)
+    # Trouver les dépendances en analysant le module complet
+    analyzer = FunctionAnalyzer(full_source_code)
     all_functions = set(module_info.functions.keys())
     dependencies = analyzer.get_function_dependencies_ordered(function_name, all_functions)
 
@@ -277,6 +282,10 @@ def main():
         logger.info(f"Fichier de fonctions: {args.function_file}")
         logger.info(f"Fichier unittest: {unittest_file}")
 
+        # Lire le code source complet du fichier
+        with open(args.function_file, 'r', encoding='utf-8') as f:
+            full_source_code = f.read()
+
         # Analyser le fichier de fonctions
         module_info = analyze_python_file(args.function_file)
         logger.info(f"Module analysé: {len(module_info.functions)} fonctions trouvées")
@@ -297,7 +306,8 @@ def main():
                     function_name,
                     module_info,
                     test_classes[function_name],
-                    config
+                    config,
+                    full_source_code
                 )
                 questions.append(question)
 

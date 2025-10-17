@@ -49,6 +49,16 @@ RUN mkdir -p /var/www/moodledata && chown -R www-data:www-data /var/www/moodleda
 # Installer mysql client pour le script d'installation
 RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
 
+# Télécharger et installer le plugin CodeRunner depuis GitHub (version compatible avec Moodle 4.1)
+RUN cd /var/www/html/question/type && \
+    git clone --depth=1 --branch=v5.2.1 https://github.com/trampgeek/moodle-qtype_coderunner.git coderunner && \
+    chown -R www-data:www-data /var/www/html/question/type/coderunner
+
+# Télécharger et installer le behaviour adaptive_adapted_for_coderunner (version compatible)
+RUN cd /var/www/html/question/behaviour && \
+    git clone --depth=1 --branch=master https://github.com/trampgeek/moodle-qbehaviour_adaptive_adapted_for_coderunner.git adaptive_adapted_for_coderunner && \
+    chown -R www-data:www-data /var/www/html/question/behaviour/adaptive_adapted_for_coderunner
+
 # Copier le script d'entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
