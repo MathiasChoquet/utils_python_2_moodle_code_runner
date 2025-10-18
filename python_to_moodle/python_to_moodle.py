@@ -177,11 +177,14 @@ def process_function(function_name: str, module_info, test_class,
     func_info = module_info.functions[function_name]
 
     # Construire le questiontext depuis le docstring
-    questiontext = f"<p>Implémentez ci-dessous la fonction <em>{function_name}</em> demandée</p>"
     if func_info.docstring:
-        # Optionnel: ajouter le docstring dans le questiontext
-        # questiontext += f"<pre>{func_info.docstring}</pre>"
-        pass
+        # Utiliser le docstring comme questiontext principal
+        # Convertir le docstring en HTML (remplacer les sauts de ligne par <br>)
+        docstring_html = func_info.docstring.replace('\n', '<br>\n')
+        questiontext = f"<p>{docstring_html}</p>"
+    else:
+        # Fallback si pas de docstring
+        questiontext = f"<p>Implémentez ci-dessous la fonction <em>{function_name}</em> demandée</p>"
 
     # Trouver les dépendances en analysant le module complet
     analyzer = FunctionAnalyzer(full_source_code)
