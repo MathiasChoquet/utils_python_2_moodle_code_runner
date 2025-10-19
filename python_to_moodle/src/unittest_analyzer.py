@@ -146,19 +146,23 @@ class UnittestAnalyzer:
 
     def _extract_tested_function_name(self, class_name: str) -> Optional[str]:
         """
-        Extrait le nom de la fonction testée depuis le nom de la classe.
+        Extrait le nom de la fonction ou classe testée depuis le nom de la classe.
 
         Args:
-            class_name: Nom de la classe de test (ex: TestFeetToMeter)
+            class_name: Nom de la classe de test (ex: TestFeetToMeter ou Test_Aircraft)
 
         Returns:
-            Nom de la fonction (ex: feet_to_meter) ou None
+            Nom de la fonction (ex: feet_to_meter) ou classe (ex: Aircraft) ou None
         """
         # Enlever le préfixe "Test" ou "Test_"
         if class_name.startswith('Test'):
             function_part = class_name[4:]  # Enlever "Test"
             if function_part.startswith('_'):
                 function_part = function_part[1:]  # Enlever le "_" si présent
+                # Si le nom commence par une majuscule après le underscore, c'est probablement une classe
+                # Ex: Test_Aircraft -> Aircraft (garder tel quel)
+                if function_part and function_part[0].isupper():
+                    return function_part
 
             # Convertir CamelCase en snake_case
             # TestFeetToMeter -> feet_to_meter

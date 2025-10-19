@@ -1,5 +1,5 @@
 """
-Exemples de fonctions pour tester la génération de questions Moodle CodeRunner
+Exemples de fonctions et classes pour tester la génération de questions Moodle CodeRunner
 """
 
 
@@ -88,3 +88,55 @@ def moyenne_doubles(liste):
 
     somme = somme_doubles(liste)
     return somme / len(liste)
+
+
+class Calculatrice:
+    """
+    Une calculatrice simple qui stocke un résultat et permet d'effectuer
+    des opérations en chaîne.
+
+    Cette classe utilise la fonction double() pour l'opération de doublement.
+
+    Attributes:
+        resultat: Le résultat actuel de la calculatrice
+    """
+
+    def __init__(self, valeur_initiale=0):
+        """
+        Initialise la calculatrice avec une valeur de départ.
+
+        Args:
+            valeur_initiale: La valeur de départ (par défaut 0)
+
+        Raises:
+            TypeError: Si la valeur initiale n'est pas un nombre
+        """
+        if not isinstance(valeur_initiale, (int, float)):
+            raise TypeError("La valeur initiale doit être un nombre")
+        self.resultat = valeur_initiale
+
+    def ajouter(self, nombre):
+        """
+        Ajoute un nombre au résultat actuel.
+
+        Args:
+            nombre: Le nombre à ajouter
+
+        Raises:
+            TypeError: Si le nombre n'est pas numérique
+        """
+        if not isinstance(nombre, (int, float)):
+            raise TypeError("Le nombre doit être numérique")
+        self.resultat += nombre
+
+    def doubler(self):
+        """
+        Double le résultat actuel en utilisant la fonction double().
+        """
+        self.resultat = double(self.resultat)
+
+    def reinitialiser(self):
+        """
+        Remet le résultat à zéro.
+        """
+        self.resultat = 0

@@ -43,17 +43,20 @@ python python_to_moodle.py input/test_minimal.py --unittest-file input/test_mini
 ➡️ [Voir la documentation complète](python_to_moodle/UTILISATION.md)
 
 **Fonctionnalités :**
-- ✅ Analyse automatique des fonctions Python et leurs docstrings
-- ✅ Extraction des dépendances entre fonctions
+- ✅ Analyse automatique des **fonctions et classes** Python et leurs docstrings
+- ✅ Extraction des dépendances entre fonctions et classes
+- ✅ Résolution automatique des dépendances transitives
+- ✅ Inclusion automatique des classes et fonctions nécessaires dans les templates
+- ✅ Support des tests avec `setUp` pour les classes
 - ✅ Transformation des tests unittest en test cases Moodle
-- ✅ Génération XML conforme au format Moodle CodeRunner
+- ✅ Génération XML conforme au format Moodle CodeRunner (sans caractères `\r`)
 - ✅ Configuration flexible via YAML
 - ✅ Logging détaillé
 
 **Workflow typique :**
-1. Écrivez vos fonctions Python avec docstrings
-2. Créez les tests unittest correspondants
-3. Générez le XML : `python python_to_moodle.py votre_fichier.py`
+1. Écrivez vos fonctions et/ou classes Python avec docstrings
+2. Créez les tests unittest correspondants (ex: `Test_MaClasse` pour une classe `MaClasse`)
+3. Générez le XML : `python python_to_moodle.py votre_fichier.py --unittest-file votre_fichier_unittest.py`
 4. Importez le XML dans Moodle
 
 ---
@@ -93,20 +96,34 @@ Accédez à Moodle : http://localhost:8080
 
 ### Développement de questions
 
-1. **Développer** vos fonctions Python avec docstrings
+1. **Développer** vos fonctions et classes Python avec docstrings
    ```python
    def ma_fonction(param):
        """
        Énoncé de l'exercice pour les étudiants...
        """
        return result
+
+   class MaClasse:
+       """
+       Énoncé pour la classe...
+       """
+       def __init__(self, param):
+           self.param = param
    ```
 
 2. **Tester** avec unittest
    ```python
-   class TestMaFonction(unittest.TestCase):
+   class Test_ma_fonction(unittest.TestCase):
        def test_cas_simple(self):
            self.assertEqual(ma_fonction(42), 84)
+
+   class Test_MaClasse(unittest.TestCase):
+       def setUp(self):
+           self.obj = MaClasse(10)
+
+       def test_attribut(self):
+           self.assertEqual(self.obj.param, 10)
    ```
 
 3. **Générer le XML**
@@ -149,20 +166,36 @@ Accédez à Moodle : http://localhost:8080
 Des fichiers d'exemple complets sont fournis dans `python_to_moodle/input/` :
 
 ### test_minimal.py
-Fichier d'exemple démontrant :
-- **Deux fonctions** : `double()` et `somme_doubles()`
-- **Dépendances** : `somme_doubles()` utilise `double()`
+Fichier d'exemple démontrant les **fonctionnalités principales** :
+- **Trois fonctions** : `double()`, `somme_doubles()`, `moyenne_doubles()`
+- **Une classe** : `Calculatrice` qui utilise la fonction `double()`
+- **Dépendances automatiques** :
+  - `somme_doubles()` utilise `double()` → `double()` est incluse automatiquement
+  - `moyenne_doubles()` utilise `somme_doubles()` → les deux sont incluses
+  - `Calculatrice.doubler()` utilise `double()` → `double()` est incluse dans le template
 - **Docstrings complètes** avec Args, Returns, Raises et Exemples
-- **Gestion d'exceptions** avec TypeError
+- **Gestion d'exceptions** avec TypeError et ValueError
 
 ### test_minimal_unittest.py
 Fichier de tests démontrant tous les types d'assertions :
 - ✅ **assertEqual** : tests d'égalité (nombres positifs, négatifs, zéro, décimaux)
 - ✅ **assertIn** : tests d'appartenance (vérifier qu'un résultat est dans une liste)
-- ✅ **assertRaises** : tests d'exceptions (TypeError avec arguments invalides)
+- ✅ **assertRaises** : tests d'exceptions (TypeError, ValueError)
 - ✅ **Tests de messages d'erreur** : vérification du contenu des exceptions
+- ✅ **Tests avec setUp** : initialisation d'objets pour tester la classe `Calculatrice`
+- ✅ **Tests de méthodes de classe** : tests des attributs et méthodes
 
-**Génération :** Crée 2 questions Moodle avec 13 tests au total
+**Génération :** Crée 4 questions Moodle (3 fonctions + 1 classe) avec 24 tests au total
+
+### Résolution automatique des dépendances
+
+Le système détecte et inclut automatiquement toutes les dépendances nécessaires :
+- **Pour les fonctions** : si `somme_doubles()` utilise `double()`, alors `double()` est incluse dans le template
+- **Pour les classes** : si une classe utilise des fonctions ou d'autres classes, elles sont incluses
+- **Dépendances transitives** : si A dépend de B qui dépend de C, alors B et C sont inclus
+- **Tests avec setUp** : les classes et fonctions utilisées dans `setUp()` sont automatiquement détectées
+
+Cela signifie que les étudiants ont accès à tout le code nécessaire pour que leurs tests fonctionnent, sans avoir à tout réimplémenter.
 
 ## 🤝 Contribution
 

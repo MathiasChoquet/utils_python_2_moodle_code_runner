@@ -103,6 +103,10 @@ class AssertionTransformer(ast.NodeTransformer):
         testcode = '\n'.join(testcode_lines)
         expected = '\n'.join(str(e) for e in expected_outputs)
 
+        # Nettoyer les retours chariot Windows (\r) pour n'avoir que \n
+        testcode = testcode.replace('\r\n', '\n').replace('\r', '\n')
+        expected = expected.replace('\r\n', '\n').replace('\r', '\n')
+
         return MoodleTestCase(testcode=testcode, expected=expected)
 
     def _extract_setup_body(self, setup_code: str) -> list:

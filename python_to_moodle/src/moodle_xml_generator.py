@@ -410,7 +410,8 @@ class MoodleXMLGenerator:
 
         xml_str = self.to_xml_string(quiz, pretty_print=True)
 
-        with open(filepath, 'w', encoding='utf-8') as f:
+        # Forcer l'utilisation de \n uniquement (pas de \r\n Windows)
+        with open(filepath, 'w', encoding='utf-8', newline='\n') as f:
             f.write(xml_str)
 
         logger.info(f"Quiz sauvegardé avec succès: {filepath}")
