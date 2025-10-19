@@ -3,7 +3,7 @@
 # Catégorie de la banque de questions
 category:
   # Chemin de la catégorie dans Moodle (format: $course$/top/Category1/Category2)
-  path: "$course$/top/Défaut pour 25-Mi21-In1/Test Banque Questions/Partiel"
+  path: "$course$/top/Test"
   # Description de la catégorie
   info: "Questions générées automatiquement depuis Python"
   # Format de l'info (html, moodle_auto_format)
