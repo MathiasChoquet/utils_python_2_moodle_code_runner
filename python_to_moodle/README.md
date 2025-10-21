@@ -89,6 +89,7 @@ python python_to_moodle.py input/test_minimal.py
 ```
 
 Ce fichier minimal est idéal pour :
+
 - 🐛 Déboguer les problèmes d'import Moodle
 - ✅ Tester rapidement la configuration
 - 📚 Apprendre la structure des fichiers
@@ -129,46 +130,34 @@ docker-compose up -d
 ## 🐛 Dépannage
 
 ### Erreur "No module named 'yaml'"
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### Erreur "Fichier unittest non trouvé"
+
 Utilisez l'option `--unittest-file` pour spécifier le fichier :
+
 ```bash
 python python_to_moodle.py mon_fichier.py --unittest-file mes_tests.py
 ```
 
 ### Erreur lors de l'import XML dans Moodle
+
 Si vous obtenez une erreur `mysqli::real_escape_string(): Argument #1 ($string) must be of type string, array given`, cela signifie que le XML contient des caractères mal échappés.
 
 **Solution :** Le générateur préserve maintenant correctement les caractères `<` et `>` dans les sections CDATA. Régénérez votre XML avec la dernière version du script.
 
 **Pour déboguer :**
+
 1. Testez d'abord avec le fichier minimal : `python python_to_moodle.py input/test_minimal.py`
 2. Importez `output/test_minimal_moodle.xml` dans Moodle
 3. Si le minimal fonctionne, le problème vient du fichier complexe
 
 ### Assertions non transformées
+
 Consultez le guide [UTILISATION.md](UTILISATION.md) pour la liste des assertions supportées.
-
-## 📝 Changelog
-
-### Version 1.0.2 (2025-10-16)
-- ✅ Ajout de fichiers d'exemple minimaux pour le débogage
-- ✅ Amélioration de la détection des contenus CDATA (HTML échappé)
-- ✅ Correction du format des balises vides (`<tag></tag>` au lieu de `<tag/>`)
-
-### Version 1.0.1 (2025-10-16)
-- ✅ Correction du bug d'échappement des caractères dans les CDATA
-- ✅ Les séparateurs et templates Twig sont maintenant correctement préservés
-- ✅ Amélioration du pretty-printing XML
-
-### Version 1.0.0 (2025-10-16)
-- 🎉 Version initiale
-- ✅ Analyse AST des fonctions Python
-- ✅ Transformation des tests unittest
-- ✅ Génération XML Moodle CodeRunner
 
 ---
 
