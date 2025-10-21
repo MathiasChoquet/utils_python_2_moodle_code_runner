@@ -22,7 +22,7 @@ python python_to_moodle.py <fichier_fonctions.py> [options]
 ### Exemple avec les fichiers de démonstration
 
 ```bash
-python python_to_moodle.py input/partiel_In211_2526_with_comment.py --unittest-file input/partiel_In211_2526_unittest.py
+python python_to_moodle.py input/test_minimal.py --unittest-file input/test_minimal_unittest.py
 ```
 
 ### Options disponibles
@@ -51,7 +51,7 @@ python python_to_moodle.py input/exercices.py --config ma_config.yaml
 
 ## Structure des fichiers d'entrée
 
-### Fichier de fonctions (ex: `partiel_In211_2526_with_comment.py`)
+### Fichier de fonctions (ex: `test_minimal.py`)
 
 ```python
 """
@@ -74,7 +74,7 @@ def ma_fonction(param1, param2):
 - Le docstring de la fonction devient l'énoncé
 - Le docstring du module devient la description de la catégorie
 
-### Fichier unittest (ex: `partiel_In211_2526_unittest.py`)
+### Fichier unittest (ex: `test_minimal_unittest.py`)
 
 ```python
 import unittest
@@ -193,9 +193,8 @@ Le générateur gère automatiquement :
 ## Exemples de fichiers
 
 Des exemples complets sont fournis dans le répertoire `input/` :
-- `input/partiel_In211_2526_with_comment.py` : Fichier de fonctions
-- `input/partiel_In211_2526_unittest.py` : Fichier de tests
-- `input/questions-25-Mi21-In1-Partiel -20251015-2313.xml` : Exemple de XML Moodle (référence)
+- `input/test_minimal.py` : Fichier de fonctions
+- `input/test_minimal_unittest.py` : Fichier de tests
 
 ## Limites connues
 

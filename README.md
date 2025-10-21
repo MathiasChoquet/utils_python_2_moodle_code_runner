@@ -163,7 +163,7 @@ Accédez à Moodle : http://localhost:8080
 
 ## 💡 Exemples
 
-Des fichiers d'exemple complets sont fournis dans `python_to_moodle/input/` :
+Un fichier d'exemple complet est fourni dans `python_to_moodle/input/` :
 
 ### test_minimal.py
 Fichier d'exemple démontrant les **fonctionnalités principales** :

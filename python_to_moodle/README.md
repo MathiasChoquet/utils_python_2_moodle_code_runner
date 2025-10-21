@@ -9,7 +9,7 @@ Outil pour transformer automatiquement vos fichiers Python (fonctions + tests un
 pip install -r requirements.txt
 
 # Générer le XML depuis les fichiers d'exemple
-python python_to_moodle.py input/partiel_In211_2526_with_comment.py --unittest-file input/partiel_In211_2526_unittest.py
+python python_to_moodle.py input/test_minimal.py --unittest-file input/test_minimal_unittest.py
 
 # Le fichier XML sera dans output/
 ```
@@ -32,14 +32,10 @@ python_to_moodle/
 │   ├── assertion_transformer.py # Transformation assertions → Moodle
 │   └── moodle_xml_generator.py  # Génération XML
 ├── input/                       # Fichiers d'exemple
-│   ├── partiel_In211_2526_with_comment.py      # Exemple complet
-│   ├── partiel_In211_2526_unittest.py          # Tests complets
-│   ├── test_minimal.py                         # Exemple minimal (pour débogage)
-│   ├── test_minimal_unittest.py                # Tests minimaux
-│   └── questions-25-Mi21-In1-Partiel*.xml      # XML de référence Moodle
+│   ├── test_minimal.py                         # Exemple minimal
+│   └── test_minimal_unittest.py                # Tests minimaux
 └── output/                      # XML générés
-    ├── partiel_*_moodle.xml                    # XML complet généré
-    └── test_minimal_generated.xml              # XML minimal (pour débogage)
+    └── test_minimal_moodle.xml                 # XML généré
 ```
 
 ## ✨ Fonctionnalités
@@ -127,8 +123,7 @@ docker-compose up -d
 ## 📚 Ressources
 
 - [UTILISATION.md](UTILISATION.md) - Guide d'utilisation complet
-- [Exemples complets](input/partiel_In211_2526_with_comment.py) - Fichier d'exemple avancé
-- [Exemples minimaux](input/test_minimal.py) - Fichier d'exemple simple
+- [Exemples](input/test_minimal.py) - Fichier d'exemple
 - [Documentation Moodle CodeRunner](https://coderunner.org.nz/)
 
 ## 🐛 Dépannage
